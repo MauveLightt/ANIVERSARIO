@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Feliz Aniversario Mi Amor</title>
+  <style>
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transition: background-color 1s ease;
+    }
+    body {
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+      font-family: 'Arial Rounded MT Bold', 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    }
+    
+    /* Botón circular estilo Buy Me a Coffee */
+    .message-toggle {
+      position: absolute;
+      bottom: 30px;
+      left: 30px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: #FF813F;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      color: white;
+      transition: all 0.3s ease;
+    }
+    
+    .message-toggle:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+      background: #FF6B2B;
+    }
+    
+    /* Contenedor principal del mensaje */
+    .message-card {
+      position: absolute;
+      bottom: 100px;
+      left: 30px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 16px;
+      padding: 20px;
+      max-width: 320px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      z-index: 10;
+      display: none;
+    }
+    
+    .message-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    
+    .heart-icon {
+      font-size: 24px;
+      margin-right: 10px;
+      animation: heartbeat 1.5s infinite;
+    }
+    
+    @keyframes heartbeat {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
+    
+    .message-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: #e91e63;
+      margin: 0;
+    }
+    
+    .message-text {
+      font-size: 14px;
+      line-height: 1.4;
+      color: #333;
+      margin-bottom: 16px;
+    }
+    
+    .buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    button {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Arial Rounded MT Bold', 'Segoe UI', sans-serif;
+      font-weight: bold;
+      transition: all 0.3s;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    
+    #btnYes {
+      background: linear-gradient(to right, #e91e63, #ff4081);
+      color: white;
+      font-size: 14px;
+    }
+    
+    #btnNo {
+      background: linear-gradient(to right, #2196F3, #03A9F4);
+      color: white;
+      font-size: 14px;
+    }
+    
+    #btnMaybe {
+      background: linear-gradient(to right, #FFC107, #FFD54F);
+      color: #333;
+      font-size: 14px;
+    }
+    
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    button:disabled {
+      background: #cccccc;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    /* Diálogos */
+    .dialog {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255, 255, 255, 0.95);
+      color: #333;
+      padding: 25px;
+      border-radius: 16px;
+      text-align: center;
+      z-index: 100;
+      font-family: 'Arial Rounded MT Bold', 'Segoe UI', sans-serif;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(15px);
+      max-width: 350px;
+      width: 80%;
+    }
+    
+    .dialog h3 {
+      margin-top: 0;
+      font-size: 20px;
+      color: #e91e63;
+      margin-bottom: 12px;
+    }
+    
+    .dialog p {
+      font-size: 16px;
+      margin-bottom: 20px;
+      line-height: 1.4;
+    }
+    
+    .hidden {
+      display: none;
+    }
+    
+    /* Efecto de confeti */
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background-color: #f00;
+      opacity: 0.8;
+      border-radius: 50%;
+      z-index: 5;
+    }
+    
+    /* Mensaje de celebración */
+    .celebration-message {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 52px;
+      font-weight: bold;
+      color: white;
+      text-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+      z-index: 20;
+      text-align: center;
+      opacity: 0;
+      transition: opacity 1s;
+    }
+    
+    .visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="c"></canvas>
+  
+  <!-- Botón circular estilo Buy Me a Coffee -->
+  <button class="message-toggle">❤️</button>
+  
+  <!-- Mensaje integrado -->
+  <div class="message-card">
+    <div class="message-header">
+      <div class="heart-icon">❤️</div>
+      <h2 class="message-title">¡Un Año Inolvidable!</h2>
+    </div>
+    <div class="message-text">
+      <p>¡Gracias por darme el mejor año de mi vida! &lt;3</p>
+      <p>¿Te gustaría que compartiéramos 1 año más? ¡Sería maravilloso!</p>
+    </div>
+    <div class="buttons">
+      <button id="btnYes">¡SÍ, POR SUPUESTO!</button>
+      <button id="btnNo">No</button>
+      <button id="btnMaybe">Tal vez</button>
+    </div>
+  </div>
+  
+  <!-- Diálogo 1 -->
+  <div id="dialog1" class="dialog hidden">
+    <h3>¡Espera!</h3>
+    <p>¿Estás segura? 😢 ¡No quiero que nuestro año termine!</p>
+    <div class="buttons">
+      <button id="dialog1Yes">¡Sí, quiero otro año!</button>
+      <button id="dialog1No">No, no estoy segura</button>
+    </div>
+  </div>
+  
+  <!-- Diálogo 2 -->
+  <div id="dialog2" class="dialog hidden">
+    <h3>¡Ups!</h3>
+    <p>¡Creo que te equivocaste de botón! 😊 ¡Pero no te preocupes, puedes intentarlo nuevamente!</p>
+    <div class="buttons">
+      <button id="dialog2Yes">Sí, por supuesto que sí</button>
+      <button id="dialog2No" disabled>No</button>
+    </div>
+  </div>
+  
+  <!-- Mensaje de celebración -->
+  <div id="celebrationMessage" class="celebration-message hidden">
+    ¡TE AMO! 💖
+  </div>
+
+  <script>
+    // Configuración inicial
+    let c = document.getElementById('c');
+    let w = (c.width = window.innerWidth),
+      h = (c.height = window.innerHeight),
+      ctx = c.getContext("2d"),
+      hw = w / 2;
+    (hh = h / 2),
+    (opts = {
+      strings: ["FELIZ", "ANIVERSARIO", "MI AMOR¡"],
+      charSize: 30,
+      charSpacing: 35,
+      lineHeight: 40,
+
+      cx: w / 2,
+      cy: h / 2,
+
+      fireworkPrevPoints: 10,
+      fireworkBaseLineWidth: 5,
+      fireworkAddedLineWidth: 8,
+      fireworkSpawnTime: 200,
+      fireworkBaseReachTime: 30,
+      fireworkAddedReachTime: 30,
+      fireworkCircleBaseSize: 20,
+      fireworkCircleAddedSize: 10,
+      fireworkCircleBaseTime: 30,
+      fireworkCircleAddedTime: 30,
+      fireworkCircleFadeBaseTime: 10,
+      fireworkCircleFadeAddedTime: 5,
+      fireworkBaseShards: 5,
+      fireworkAddedShards: 5,
+      fireworkShardPrevPoints: 3,
+      fireworkShardBaseVel: 4,
+      fireworkShardAddedVel: 2,
+      fireworkShardBaseSize: 3,
+      fireworkShardAddedSize: 3,
+      gravity: 0.1,
+      upFlow: -0.1,
+      letterContemplatingWaitTime: 360,
+      balloonSpawnTime: 20,
+      balloonBaseInflateTime: 10,
+      balloonAddedInflateTime: 10,
+      balloonBaseSize: 20,
+      balloonAddedSize: 20,
+      balloonBaseVel: 0.4,
+      balloonAddedVel: 0.4,
+      balloonBaseRadian: -(Math.PI / 2 - 0.5),
+      balloonAddedRadian: -1,
+    }),
+    (calc = {
+      totalWidth:
+        opts.charSpacing *
+        Math.max(opts.strings[0].length, opts.strings[1].length),
+    }),
+    (Tau = Math.PI * 2),
+    (TauQuarter = Tau / 4),
+    (letters = []);
+
+    ctx.font = opts.charSize + "px Verdana";
+
+    function Letter(char, x, y) {
+      this.char = char;
+      this.x = x;
+      this.y = y;
+
+      this.dx = -ctx.measureText(char).width / 2;
+      this.dy = +opts.charSize / 2;
+
+      this.fireworkDy = this.y - hh;
+
+      var hue = (x / calc.totalWidth) * 360;
+
+      this.color = "hsl(hue,80%,50%)".replace("hue", hue);
+      this.lightAlphaColor = "hsla(hue,80%,light%,alp)".replace("hue", hue);
+      this.lightColor = "hsl(hue,80%,light%)".replace("hue", hue);
+      this.alphaColor = "hsla(hue,80%,50%,alp)".replace("hue", hue);
+
+      this.reset();
+    }
+    Letter.prototype.reset = function () {
+      this.phase = "firework";
+      this.tick = 0;
+      this.spawned = false;
+      this.spawningTime = (opts.fireworkSpawnTime * Math.random()) | 0;
+      this.reachTime =
+        (opts.fireworkBaseReachTime + opts.fireworkAddedReachTime * Math.random()) |
+        0;
+      this.lineWidth =
+        opts.fireworkBaseLineWidth + opts.fireworkAddedLineWidth * Math.random();
+      this.prevPoints = [[0, hh, 0]];
+    };
+    Letter.prototype.step = function () {
+      if (this.phase === "firework") {
+        if (!this.spawned) {
+          ++this.tick;
+          if (this.tick >= this.spawningTime) {
+            this.tick = 0;
+            this.spawned = true;
+          }
+        } else {
+          ++this.tick;
+
+          var linearProportion = this.tick / this.reachTime,
+            armonicProportion = Math.sin(linearProportion * TauQuarter),
+            x = linearProportion * this.x,
+            y = hh + armonicProportion * this.fireworkDy;
+
+          if (this.prevPoints.length > opts.fireworkPrevPoints)
+            this.prevPoints.shift();
+
+          this.prevPoints.push([x, y, linearProportion * this.lineWidth]);
+
+          var lineWidthProportion = 1 / (this.prevPoints.length - 1);
+
+          for (var i = 1; i < this.prevPoints.length; ++i) {
+            var point = this.prevPoints[i],
+              point2 = this.prevPoints[i - 1];
+
+            ctx.strokeStyle = this.alphaColor.replace(
+              "alp",
+              i / this.prevPoints.length
+            );
+            ctx.lineWidth = point[2] * lineWidthProportion * i;
+            ctx.beginPath();
+            ctx.moveTo(point[0], point[1]);
+            ctx.lineTo(point2[0], point2[1]);
+            ctx.stroke();
+          }
+
+          if (this.tick >= this.reachTime) {
+            this.phase = "contemplate";
+
+            this.circleFinalSize =
+              opts.fireworkCircleBaseSize +
+              opts.fireworkCircleAddedSize * Math.random();
+            this.circleCompleteTime =
+              (opts.fireworkCircleBaseTime +
+                opts.fireworkCircleAddedTime * Math.random()) |
+              0;
+            this.circleCreating = true;
+            this.circleFading = false;
+
+            this.circleFadeTime =
+              (opts.fireworkCircleFadeBaseTime +
+                opts.fireworkCircleFadeAddedTime * Math.random()) |
+              0;
+            this.tick = 0;
+            this.tick2 = 0;
+
+            this.shards = [];
+
+            var shardCount =
+                (opts.fireworkBaseShards +
+                  opts.fireworkAddedShards * Math.random()) |
+                0,
+              angle = Tau / shardCount,
+              cos = Math.cos(angle),
+              sin = Math.sin(angle),
+              x = 1,
+              y = 0;
+
+            for (var i = 0; i < shardCount; ++i) {
+              var x1 = x;
+              x = x * cos - y * sin;
+              y = y * cos + x1 * sin;
+
+              this.shards.push(new Shard(this.x, this.y, x, y, this.alphaColor));
+            }
+          }
+        }
+      } else if (this.phase === "contemplate") {
+        ++this.tick;
+
+        if (this.circleCreating) {
+          ++this.tick2;
+          var proportion = this.tick2 / this.circleCompleteTime,
+            armonic = -Math.cos(proportion * Math.PI) / 2 + 0.5;
+
+          ctx.beginPath();
+          ctx.fillStyle = this.lightAlphaColor
+            .replace("light", 50 + 50 * proportion)
+            .replace("alp", proportion);
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, armonic * this.circleFinalSize, 0, Tau);
+          ctx.fill();
+
+          if (this.tick2 > this.circleCompleteTime) {
+            this.tick2 = 0;
+            this.circleCreating = false;
+            this.circleFading = true;
+          }
+        } else if (this.circleFading) {
+          ctx.fillStyle = this.lightColor.replace("light", 70);
+          ctx.fillText(this.char, this.x + this.dx, this.y + this.dy);
+
+          ++this.tick2;
+          var proportion = this.tick2 / this.circleFadeTime,
+            armonic = -Math.cos(proportion * Math.PI) / 2 + 0.5;
+
+          ctx.beginPath();
+          ctx.fillStyle = this.lightAlphaColor
+            .replace("light", 100)
+            .replace("alp", 1 - armonic);
+          ctx.arc(this.x, this.y, this.circleFinalSize, 0, Tau);
+          ctx.fill();
+
+          if (this.tick2 >= this.circleFadeTime) this.circleFading = false;
+        } else {
+          ctx.fillStyle = this.lightColor.replace("light", 70);
+          ctx.fillText(this.char, this.x + this.dx, this.y + this.dy);
+        }
+
+        for (var i = 0; i < this.shards.length; ++i) {
+          this.shards[i].step();
+
+          if (!this.shards[i].alive) {
+            this.shards.splice(i, 1);
+            --i;
+          }
+        }
+
+        if (this.tick > opts.letterContemplatingWaitTime) {
+          this.phase = "balloon";
+
+          this.tick = 0;
+          this.spawning = true;
+          this.spawnTime = (opts.balloonSpawnTime * Math.random()) | 0;
+          this.inflating = false;
+          this.inflateTime =
+            (opts.balloonBaseInflateTime +
+              opts.balloonAddedInflateTime * Math.random()) |
+            0;
+          this.size =
+            (opts.balloonBaseSize + opts.balloonAddedSize * Math.random()) | 0;
+
+          var rad =
+              opts.balloonBaseRadian + opts.balloonAddedRadian * Math.random(),
+            vel = opts.balloonBaseVel + opts.balloonAddedVel * Math.random();
+
+          this.vx = Math.cos(rad) * vel;
+          this.vy = Math.sin(rad) * vel;
+        }
+      } else if (this.phase === "balloon") {
+        ctx.strokeStyle = this.lightColor.replace("light", 80);
+
+        if (this.spawning) {
+          ++this.tick;
+          ctx.fillStyle = this.lightColor.replace("light", 70);
+          ctx.fillText(this.char, this.x + this.dx, this.y + this.dy);
+
+          if (this.tick >= this.spawnTime) {
+            this.tick = 0;
+            this.spawning = false;
+            this.inflating = true;
+          }
+        } else if (this.inflating) {
+          ++this.tick;
+
+          var proportion = this.tick / this.inflateTime,
+            x = (this.cx = this.x),
+            y = (this.cy = this.y - this.size * proportion);
+
+          ctx.fillStyle = this.alphaColor.replace("alp", proportion);
+          ctx.beginPath();
+          generateBalloonPath(x, y, this.size * proportion);
+          ctx.fill();
+
+          ctx.beginPath();
+          ctx.moveTo(x, y);
+          ctx.lineTo(x, this.y);
+          ctx.stroke();
+
+          ctx.fillStyle = this.lightColor.replace("light", 70);
+          ctx.fillText(this.char, this.x + this.dx, this.y + this.dy);
+
+          if (this.tick >= this.inflateTime) {
+            this.tick = 0;
+            this.inflating = false;
+          }
+        } else {
+          this.cx += this.vx;
+          this.cy += this.vy += opts.upFlow;
+
+          ctx.fillStyle = this.color;
+          ctx.beginPath();
+          generateBalloonPath(this.cx, this.cy, this.size);
+          ctx.fill();
+
+          ctx.beginPath();
+          ctx.moveTo(this.cx, this.cy);
+          ctx.lineTo(this.cx, this.cy + this.size);
+          ctx.stroke();
+
+          ctx.fillStyle = this.lightColor.replace("light", 70);
+          ctx.fillText(this.char, this.cx + this.dx, this.cy + this.dy + this.size);
+
+          if (this.cy + this.size < -hh || this.cx < -hw || this.cy > hw)
+            this.phase = "done";
+        }
+      }
+    };
+    function Shard(x, y, vx, vy, color) {
+      var vel =
+        opts.fireworkShardBaseVel + opts.fireworkShardAddedVel * Math.random();
+
+      this.vx = vx * vel;
+      this.vy = vy * vel;
+
+      this.x = x;
+      this.y = y;
+
+      this.prevPoints = [[x, y]];
+      this.color = color;
+
+      this.alive = true;
+
+      this.size =
+        opts.fireworkShardBaseSize + opts.fireworkShardAddedSize * Math.random();
+    }
+    Shard.prototype.step = function () {
+      this.x += this.vx;
+      this.y += this.vy += opts.gravity;
+
+      if (this.prevPoints.length > opts.fireworkShardPrevPoints)
+        this.prevPoints.shift();
+
+      this.prevPoints.push([this.x, this.y]);
+
+      var lineWidthProportion = this.size / this.prevPoints.length;
+
+      for (var k = 0; k < this.prevPoints.length - 1; ++k) {
+        var point = this.prevPoints[k],
+          point2 = this.prevPoints[k + 1];
+
+        ctx.strokeStyle = this.color.replace("alp", k / this.prevPoints.length);
+        ctx.lineWidth = k * lineWidthProportion;
+        ctx.beginPath();
+        ctx.moveTo(point[0], point[1]);
+        ctx.lineTo(point2[0], point2[1]);
+        ctx.stroke();
+      }
+
+      if (this.prevPoints[0][1] > hh) this.alive = false;
+    };
+    function generateBalloonPath(x, y, size) {
+      ctx.moveTo(x, y);
+      ctx.bezierCurveTo(
+        x - size / 2,
+        y - size / 2,
+        x - size / 4,
+        y - size,
+        x,
+        y - size
+      );
+      ctx.bezierCurveTo(x + size / 4, y - size, x + size / 2, y - size / 2, x, y);
+    }
+
+    // Variable para controlar si mostrar o no los textos de fondo
+    let showBackgroundText = true;
+
+    function anim() {
+      window.requestAnimationFrame(anim);
+
+      ctx.fillStyle = "#111";
+      ctx.fillRect(0, 0, w, h);
+
+      ctx.translate(hw, hh);
+
+      var done = true;
+      for (var l = 0; l < letters.length; ++l) {
+        // Solo dibujar los textos si showBackgroundText es true
+        if (showBackgroundText) {
+          letters[l].step();
+        }
+        if (letters[l].phase !== "done") done = false;
+      }
+
+      ctx.translate(-hw, -hh);
+
+      if (done && showBackgroundText) for (var l = 0; l < letters.length; ++l) letters[l].reset();
+    }
+
+    for (let i = 0; i < opts.strings.length; ++i) {
+      for (var j = 0; j < opts.strings[i].length; ++j) {
+        letters.push(
+          new Letter(
+            opts.strings[i][j],
+            j * opts.charSpacing +
+              opts.charSpacing / 2 -
+              (opts.strings[i].length * opts.charSize) / 2,
+            i * opts.lineHeight +
+              opts.lineHeight / 2 -
+              (opts.strings.length * opts.lineHeight) / 2
+          )
+        );
+      }
+    }
+
+    anim();
+
+    window.addEventListener("resize", function () {
+      w = c.width = window.innerWidth;
+      h = c.height = window.innerHeight;
+
+      hw = w / 2;
+      hh = h / 2;
+
+      ctx.font = opts.charSize + "px Verdana";
+    });
+
+    // Lógica para los botones y diálogos
+    const messageToggle = document.querySelector('.message-toggle');
+    const messageCard = document.querySelector('.message-card');
+    const btnYes = document.getElementById('btnYes');
+    const btnNo = document.getElementById('btnNo');
+    const btnMaybe = document.getElementById('btnMaybe');
+    const dialog1 = document.getElementById('dialog1');
+    const dialog2 = document.getElementById('dialog2');
+    const dialog1Yes = document.getElementById('dialog1Yes');
+    const dialog1No = document.getElementById('dialog1No');
+    const dialog2Yes = document.getElementById('dialog2Yes');
+    const dialog2No = document.getElementById('dialog2No');
+    const celebrationMessage = document.getElementById('celebrationMessage');
+
+    let noCount = 0;
+
+    // Mostrar/ocultar el mensaje al hacer clic en el botón circular
+    messageToggle.addEventListener('click', function() {
+      if (messageCard.style.display === 'block') {
+        messageCard.style.display = 'none';
+      } else {
+        messageCard.style.display = 'block';
+      }
+    });
+
+    // Función para crear confeti
+    function createConfetti() {
+      const colors = ['#e91e63', '#2196F3', '#FFC107', '#ff4081', '#03A9F4', '#FFD54F'];
+      for (let i = 0; i < 200; i++) {
+        setTimeout(() => {
+          const confetti = document.createElement('div');
+          confetti.className = 'confetti';
+          confetti.style.left = Math.random() * 100 + 'vw';
+          confetti.style.top = '-10px';
+          confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+          confetti.style.width = Math.random() * 10 + 5 + 'px';
+          confetti.style.height = Math.random() * 10 + 5 + 'px';
+          confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+          document.body.appendChild(confetti);
+          
+          // Animación
+          confetti.animate([
+            { transform: 'translateY(0) rotate(0deg)', opacity: 1 },
+            { transform: `translateY(${h}px) rotate(${Math.random() * 360}deg)`, opacity: 0 }
+          ], {
+            duration: Math.random() * 3000 + 2000,
+            easing: 'cubic-bezier(0.215, 0.610, 0.355, 1)'
+          }).onfinish = () => {
+            confetti.remove();
+          };
+        }, i * 20);
+      }
+    }
+
+    function showHeartBackground() {
+      // Ocultar los textos de fondo
+      showBackgroundText = false;
+      
+      // Cerrar todos los diálogos
+      dialog1.classList.add('hidden');
+      dialog2.classList.add('hidden');
+      
+      // Ocultar el mensaje de la esquina
+      messageCard.style.display = 'none';
+      messageToggle.style.display = 'none';
+      
+      // Cambiar el fondo a rosa/rojo
+      document.body.style.background = "linear-gradient(135deg, #e91e63 0%, #ff4081 100%)";
+      c.style.backgroundColor = "#ff4081";
+      
+      // Limpiar el canvas
+      ctx.clearRect(0, 0, w, h);
+      
+      // Crear confeti
+      createConfetti();
+      
+      // Mostrar mensaje de celebración
+      celebrationMessage.classList.remove('hidden');
+      setTimeout(() => {
+        celebrationMessage.classList.add('visible');
+      }, 100);
+    }
+
+    // Event listeners para los botones
+    btnYes.addEventListener('click', showHeartBackground);
+    dialog1Yes.addEventListener('click', showHeartBackground);
+    dialog2Yes.addEventListener('click', showHeartBackground);
+
+    btnNo.addEventListener('click', () => {
+      noCount++;
+      if (noCount === 1) {
+        dialog1.classList.remove('hidden');
+      } else if (noCount >= 2) {
+        dialog2.classList.remove('hidden');
+      }
+    });
+
+    btnMaybe.addEventListener('click', () => {
+      alert("¡El 'tal vez' es un 'sí' disfrazado! 💕 ¡Vamos por otro año juntos!");
+    });
+
+    dialog1No.addEventListener('click', () => {
+      dialog1.classList.add('hidden');
+      noCount++;
+      dialog2.classList.remove('hidden');
+    });
+
+    // El botón No en el segundo diálogo está deshabilitado
+  </script>
+</body>
+</html>
