@@ -2,28 +2,39 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Feliz Aniversario Mi Amor</title>
   <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
     canvas {
       position: absolute;
       top: 0;
       left: 0;
+      width: 100%;
+      height: 100%;
       transition: background-color 1s ease;
     }
+    
     body {
       overflow: hidden;
       margin: 0;
       padding: 0;
-      font-family: 'Arial Rounded MT Bold', 'Segoe UI', sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
       background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      touch-action: manipulation;
+      width: 100vw;
+      height: 100vh;
     }
     
-    /* Botón circular estilo Buy Me a Coffee */
+    /* Botón circular responsivo */
     .message-toggle {
-      position: absolute;
-      bottom: 30px;
-      left: 30px;
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
       width: 60px;
       height: 60px;
       border-radius: 50%;
@@ -40,26 +51,54 @@
       transition: all 0.3s ease;
     }
     
+    @media (max-width: 480px) {
+      .message-toggle {
+        width: 55px;
+        height: 55px;
+        bottom: 15px;
+        left: 15px;
+        font-size: 24px;
+      }
+    }
+    
+    @media (max-width: 360px) {
+      .message-toggle {
+        width: 50px;
+        height: 50px;
+        font-size: 22px;
+      }
+    }
+    
     .message-toggle:hover {
       transform: scale(1.1);
       box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
       background: #FF6B2B;
     }
     
-    /* Contenedor principal del mensaje */
+    /* Contenedor principal del mensaje - Responsivo */
     .message-card {
-      position: absolute;
-      bottom: 100px;
-      left: 30px;
-      background: rgba(255, 255, 255, 0.95);
+      position: fixed;
+      bottom: 90px;
+      left: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.98);
       border-radius: 16px;
-      padding: 20px;
-      max-width: 320px;
+      padding: clamp(15px, 4vw, 20px);
+      max-width: 400px;
       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.2);
       z-index: 10;
       display: none;
+      margin: 0 auto;
+    }
+    
+    @media (min-width: 768px) {
+      .message-card {
+        left: 30px;
+        right: auto;
+        max-width: 350px;
+      }
     }
     
     .message-header {
@@ -69,7 +108,7 @@
     }
     
     .heart-icon {
-      font-size: 24px;
+      font-size: clamp(22px, 6vw, 24px);
       margin-right: 10px;
       animation: heartbeat 1.5s infinite;
     }
@@ -81,17 +120,21 @@
     }
     
     .message-title {
-      font-size: 18px;
+      font-size: clamp(16px, 5vw, 18px);
       font-weight: bold;
       color: #e91e63;
       margin: 0;
     }
     
     .message-text {
-      font-size: 14px;
+      font-size: clamp(13px, 4vw, 14px);
       line-height: 1.4;
       color: #333;
       margin-bottom: 16px;
+    }
+    
+    .message-text p {
+      margin: 8px 0;
     }
     
     .buttons {
@@ -101,41 +144,36 @@
     }
     
     button {
-      padding: 10px 16px;
+      padding: clamp(10px, 3vw, 12px) clamp(12px, 4vw, 16px);
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      font-family: 'Arial Rounded MT Bold', 'Segoe UI', sans-serif;
+      font-family: inherit;
       font-weight: bold;
       transition: all 0.3s;
       box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      font-size: clamp(13px, 4vw, 14px);
+      min-height: 44px; /* Tamaño mínimo para touch */
     }
     
     #btnYes {
       background: linear-gradient(to right, #e91e63, #ff4081);
       color: white;
-      font-size: 14px;
     }
     
     #btnNo {
       background: linear-gradient(to right, #2196F3, #03A9F4);
       color: white;
-      font-size: 14px;
     }
     
     #btnMaybe {
       background: linear-gradient(to right, #FFC107, #FFD54F);
       color: #333;
-      font-size: 14px;
     }
     
-    button:hover {
+    button:hover, button:active {
       transform: translateY(-2px);
       box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    }
-    
-    button:active {
-      transform: translateY(0);
     }
     
     button:disabled {
@@ -145,35 +183,37 @@
       box-shadow: none;
     }
     
-    /* Diálogos */
+    /* Diálogos responsivos */
     .dialog {
       position: fixed;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background: rgba(255, 255, 255, 0.95);
+      background: rgba(255, 255, 255, 0.98);
       color: #333;
-      padding: 25px;
+      padding: clamp(20px, 6vw, 25px);
       border-radius: 16px;
       text-align: center;
       z-index: 100;
-      font-family: 'Arial Rounded MT Bold', 'Segoe UI', sans-serif;
+      font-family: inherit;
       box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
       border: 1px solid rgba(255, 255, 255, 0.3);
       backdrop-filter: blur(15px);
-      max-width: 350px;
-      width: 80%;
+      width: calc(100vw - 40px);
+      max-width: 400px;
+      max-height: 90vh;
+      overflow-y: auto;
     }
     
     .dialog h3 {
       margin-top: 0;
-      font-size: 20px;
+      font-size: clamp(18px, 5vw, 20px);
       color: #e91e63;
       margin-bottom: 12px;
     }
     
     .dialog p {
-      font-size: 16px;
+      font-size: clamp(14px, 4vw, 16px);
       margin-bottom: 20px;
       line-height: 1.4;
     }
@@ -182,24 +222,24 @@
       display: none;
     }
     
-    /* Efecto de confeti */
+    /* Efecto de confeti responsivo */
     .confetti {
       position: absolute;
-      width: 10px;
-      height: 10px;
+      width: clamp(8px, 2.5vw, 12px);
+      height: clamp(8px, 2.5vw, 12px);
       background-color: #f00;
       opacity: 0.8;
       border-radius: 50%;
       z-index: 5;
     }
     
-    /* Mensaje de celebración */
+    /* Mensaje de celebración responsivo */
     .celebration-message {
       position: fixed;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 52px;
+      font-size: clamp(32px, 10vw, 60px);
       font-weight: bold;
       color: white;
       text-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
@@ -207,17 +247,43 @@
       text-align: center;
       opacity: 0;
       transition: opacity 1s;
+      padding: 0 20px;
+      width: 100%;
     }
     
     .visible {
       opacity: 1;
+    }
+    
+    /* Prevenir zoom en inputs en iOS */
+    @media screen and (-webkit-min-device-pixel-ratio:0) {
+      select,
+      textarea,
+      input {
+        font-size: 16px;
+      }
+    }
+    
+    /* Mejoras para dispositivos táctiles */
+    @media (hover: none) and (pointer: coarse) {
+      button:hover {
+        transform: none;
+      }
+      
+      button:active {
+        transform: scale(0.98);
+      }
+      
+      .message-toggle:active {
+        transform: scale(0.95);
+      }
     }
   </style>
 </head>
 <body>
   <canvas id="c"></canvas>
   
-  <!-- Botón circular estilo Buy Me a Coffee -->
+  <!-- Botón circular -->
   <button class="message-toggle">❤️</button>
   
   <!-- Mensaje integrado -->
@@ -263,14 +329,45 @@
   </div>
 
   <script>
-    // Configuración inicial
+    // Configuración inicial responsiva
     let c = document.getElementById('c');
-    let w = (c.width = window.innerWidth),
-      h = (c.height = window.innerHeight),
-      ctx = c.getContext("2d"),
+    let w, h, hw, hh, ctx;
+    
+    function initCanvas() {
+      w = c.width = window.innerWidth;
+      h = c.height = window.innerHeight;
+      ctx = c.getContext("2d");
       hw = w / 2;
-    (hh = h / 2),
-    (opts = {
+      hh = h / 2;
+      
+      // Ajustar tamaños según la pantalla
+      const isMobile = w < 768;
+      opts.charSize = isMobile ? 24 : 30;
+      opts.charSpacing = isMobile ? 28 : 35;
+      opts.lineHeight = isMobile ? 32 : 40;
+      
+      ctx.font = opts.charSize + "px Verdana";
+      
+      // Recalcular posiciones de las letras
+      letters = [];
+      for (let i = 0; i < opts.strings.length; ++i) {
+        for (var j = 0; j < opts.strings[i].length; ++j) {
+          letters.push(
+            new Letter(
+              opts.strings[i][j],
+              j * opts.charSpacing +
+                opts.charSpacing / 2 -
+                (opts.strings[i].length * opts.charSize) / 2,
+              i * opts.lineHeight +
+                opts.lineHeight / 2 -
+                (opts.strings.length * opts.lineHeight) / 2
+            )
+          );
+        }
+      }
+    }
+    
+    let opts = {
       strings: ["FELIZ", "ANIVERSARIO", "MI AMOR¡"],
       charSize: 30,
       charSpacing: 35,
@@ -310,17 +407,15 @@
       balloonAddedVel: 0.4,
       balloonBaseRadian: -(Math.PI / 2 - 0.5),
       balloonAddedRadian: -1,
-    }),
-    (calc = {
-      totalWidth:
-        opts.charSpacing *
-        Math.max(opts.strings[0].length, opts.strings[1].length),
-    }),
-    (Tau = Math.PI * 2),
-    (TauQuarter = Tau / 4),
-    (letters = []);
-
-    ctx.font = opts.charSize + "px Verdana";
+    };
+    
+    let calc = {
+      totalWidth: opts.charSpacing * Math.max(opts.strings[0].length, opts.strings[1].length),
+    };
+    
+    const Tau = Math.PI * 2;
+    const TauQuarter = Tau / 4;
+    let letters = [];
 
     function Letter(char, x, y) {
       this.char = char;
@@ -341,6 +436,7 @@
 
       this.reset();
     }
+    
     Letter.prototype.reset = function () {
       this.phase = "firework";
       this.tick = 0;
@@ -353,6 +449,8 @@
         opts.fireworkBaseLineWidth + opts.fireworkAddedLineWidth * Math.random();
       this.prevPoints = [[0, hh, 0]];
     };
+    
+    // Resto de las funciones de Letter y Shard (igual que antes)
     Letter.prototype.step = function () {
       if (this.phase === "firework") {
         if (!this.spawned) {
@@ -563,6 +661,7 @@
         }
       }
     };
+    
     function Shard(x, y, vx, vy, color) {
       var vel =
         opts.fireworkShardBaseVel + opts.fireworkShardAddedVel * Math.random();
@@ -581,6 +680,7 @@
       this.size =
         opts.fireworkShardBaseSize + opts.fireworkShardAddedSize * Math.random();
     }
+    
     Shard.prototype.step = function () {
       this.x += this.vx;
       this.y += this.vy += opts.gravity;
@@ -606,6 +706,7 @@
 
       if (this.prevPoints[0][1] > hh) this.alive = false;
     };
+    
     function generateBalloonPath(x, y, size) {
       ctx.moveTo(x, y);
       ctx.bezierCurveTo(
@@ -644,32 +745,17 @@
       if (done && showBackgroundText) for (var l = 0; l < letters.length; ++l) letters[l].reset();
     }
 
-    for (let i = 0; i < opts.strings.length; ++i) {
-      for (var j = 0; j < opts.strings[i].length; ++j) {
-        letters.push(
-          new Letter(
-            opts.strings[i][j],
-            j * opts.charSpacing +
-              opts.charSpacing / 2 -
-              (opts.strings[i].length * opts.charSize) / 2,
-            i * opts.lineHeight +
-              opts.lineHeight / 2 -
-              (opts.strings.length * opts.lineHeight) / 2
-          )
-        );
-      }
-    }
-
+    // Inicializar canvas y animación
+    initCanvas();
     anim();
 
+    // Manejo responsivo del redimensionamiento
+    let resizeTimeout;
     window.addEventListener("resize", function () {
-      w = c.width = window.innerWidth;
-      h = c.height = window.innerHeight;
-
-      hw = w / 2;
-      hh = h / 2;
-
-      ctx.font = opts.charSize + "px Verdana";
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        initCanvas();
+      }, 250);
     });
 
     // Lógica para los botones y diálogos
@@ -697,18 +783,29 @@
       }
     });
 
+    // Cerrar diálogos al hacer clic fuera de ellos
+    document.addEventListener('click', function(e) {
+      if (messageCard.style.display === 'block' && 
+          !messageCard.contains(e.target) && 
+          !messageToggle.contains(e.target)) {
+        messageCard.style.display = 'none';
+      }
+    });
+
     // Función para crear confeti
     function createConfetti() {
       const colors = ['#e91e63', '#2196F3', '#FFC107', '#ff4081', '#03A9F4', '#FFD54F'];
-      for (let i = 0; i < 200; i++) {
+      const confettiCount = window.innerWidth < 768 ? 150 : 200;
+      
+      for (let i = 0; i < confettiCount; i++) {
         setTimeout(() => {
           const confetti = document.createElement('div');
           confetti.className = 'confetti';
           confetti.style.left = Math.random() * 100 + 'vw';
           confetti.style.top = '-10px';
           confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-          confetti.style.width = Math.random() * 10 + 5 + 'px';
-          confetti.style.height = Math.random() * 10 + 5 + 'px';
+          confetti.style.width = (Math.random() * 10 + 5) + 'px';
+          confetti.style.height = (Math.random() * 10 + 5) + 'px';
           confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
           document.body.appendChild(confetti);
           
